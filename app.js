@@ -1,9 +1,6 @@
 const express = require('express');
 
-const strengthChecker = require('./services/strengthChecker');
-const calculateEntropy = require('./services/entropyChecker');
-const calculateScore = require('./services/scoreChecker');
-const loadFeedback = require('./utils/loadFeedback');
+const mainRouter = require('./routes/mainRouter');
 
 const app = express();
 
@@ -11,31 +8,7 @@ app.use(express.urlencoded());
 
 app.set('view engine', 'ejs');
 
-
-app.get("/", (req , res , next) => {
-  res.render('main');
-})
-
-app.post("/check" , (req , res , next) => {
-  const password = req.body.password;
-
-  const checks = strengthChecker(password);
-
-  const score = calculateScore(checks);
-  const entropy = calculateEntropy(password);
-  const feedback = loadFeedback(checks);
-
-  console.log("The final answers are" , score , entropy);
-  res.render('result' , {
-    score: score,
-    entropy: entropy,
-    feedback: feedback
-  });
-
-  
-})
-
-
+app.use(mainRouter);
 
 const PORT = 3000;
 app.listen(PORT , (req, res) => {
