@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Strength Report</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  html { font-family: 'Inter', sans-serif; overflow: auto }
+  .font-display { font-family: 'Space Grotesk', sans-serif; }
+  .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+  @keyframes riseIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .rise {
+    animation: riseIn .5s cubic-bezier(.22,.61,.36,1) both;
+  }
+  .bit {
+    transition: background-color .45s ease, box-shadow .45s ease;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .rise { animation: none; }
+    .bit { transition: none; }
+  }
+
+  input[type="checkbox"]#metricToggle { display:none; }
+  .toggle-track { transition: background-color .25s ease; }
+  .toggle-thumb { transition: transform .25s ease; }
+  #metricToggle:checked ~ .toggle-track .toggle-thumb { transform: translateX(100%); }
+
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size: 42px 42px;
+    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 20%, black 20%, transparent 75%);
+            mask-image: radial-gradient(ellipse 80% 60% at 50% 20%, black 20%, transparent 75%);
+  }
+  @keyframes drift {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50%      { transform: translate(2%, -3%) scale(1.05); }
+  }
+  .blob { animation: drift 14s ease-in-out infinite; filter: blur(90px); }
+  .blob-b { animation-delay: -7s; }
+  @media (prefers-reduced-motion: reduce) {
+    .blob { animation: none; }
+  }
+</style>
+</head>
+<body class="relative bg-[#0B1220] text-[#E8ECF4] min-h-screen flex items-center justify-center px-4 py-12 overflow-hidden">
+
+  <!-- background  -->
+  <div class="pointer-events-none fixed inset-0 -z-10">
+    <div class="absolute inset-0 bg-[#0B1220]"></div>
+    <div class="blob absolute -top-24 left-1/4 h-[26rem] w-[26rem] rounded-full bg-[#134E4A]/40"></div>
+    <div class="blob blob-b absolute top-1/3 right-[8%] h-[22rem] w-[22rem] rounded-full bg-[#3B1D2E]/40"></div>
+    <div class="absolute inset-0 bg-grid"></div>
+    <div class="absolute inset-0" style="background:radial-gradient(ellipse 70% 55% at 50% 0%, transparent 0%, #0B1220 75%);"></div>
+  </div>
+
+  <main class="w-full max-w-xl">
+
+    <div class="flex items-center gap-2 mb-3 rise" style="animation-delay:.02s">
+      <span class="h-1.5 w-1.5 rounded-full bg-[#5EEAD4]"></span>
+      <span class="font-mono text-[11px] tracking-[0.2em] uppercase text-[#7C8BA8]">Password Diagnostic</span>
+    </div>
+
+    <div class="bg-[#121A2B] border border-white/5 rounded-2xl p-7 sm:p-9 shadow-[0_20px_60px_-20px_rgba(0,0,0,0.6)] rise" style="animation-delay:.06s">
+
+      <!-- Header row -->
+      <div class="flex items-start justify-between gap-4 mb-8">
+        <div>
+          <h1 class="font-display text-2xl sm:text-3xl font-semibold tracking-tight">Strength Report</h1>
+          <p id="verdictLine" class="font-mono text-sm mt-1 text-[#7C8BA8]">evaluating input&hellip;</p>
+        </div>
+        <div id="ratingBadge" class="shrink-0 font-display text-xs font-semibold px-3 py-1.5 rounded-full border">
+          &mdash;
+        </div>
+      </div>
+
+      <!-- entropy bits -->
+      <div class="mb-7">
+        <div class="flex items-end gap-2">
+          <span id="entropyValue" class="font-mono text-5xl sm:text-6xl font-medium tabular-nums leading-none">0</span>
+          <span class="font-mono text-sm text-[#7C8BA8] mb-1.5">bits of entropy</span>
+        </div>
+        <p class="font-mono text-xs text-[#7C8BA8] mt-1.5">score <span id="scoreValue" class="text-[#E8ECF4]">0</span>/10</p>
+      </div>
+
+      <div class="flex items-center justify-between mb-3">
+        <span class="font-mono text-[11px] tracking-[0.15em] uppercase text-[#7C8BA8]">Visualize by</span>
+        <label class="relative inline-flex items-center cursor-pointer select-none">
+          <input type="checkbox" id="metricToggle" />
+          <span class="toggle-track relative w-24 h-7 bg-black/30 border border-white/10 rounded-full flex items-center px-1">
+            <span class="toggle-thumb absolute h-5 w-11 rounded-full bg-[#1B2740] border border-white/10"></span>
+            <span class="relative z-10 w-1/2 text-center font-mono text-[10px] text-[#E8ECF4]">SCORE</span>
+            <span class="relative z-10 w-1/2 text-center font-mono text-[10px] text-[#7C8BA8]">ENTROPY</span>
+          </span>
+        </label>
+      </div>
+
+      <div id="bitStrip" class="flex items-end gap-[3px] h-10 mb-1.5"></div>
+      <div class="flex justify-between font-mono text-[10px] text-[#4C5A78] mb-8">
+        <span>0</span>
+        <span id="stripMaxLabel">10</span>
+      </div>
+
+      <!-- Feedback -->
+      <div>
+        <p class="font-mono text-[11px] tracking-[0.15em] uppercase text-[#7C8BA8] mb-2.5">Feedback</p>
+        <ul id="feedbackList" class="space-y-2 font-mono text-sm"></ul>
+      </div>
+
+    </div>
+
+    <p class="text-center font-mono text-[11px] text-[#4C5A78] mt-5">Nothing here is stored or transmitted.</p>
+
+    <div class="flex items-center justify-center gap-3 mt-7 rise" style="animation-delay:.12s">
+      <a href="/" class="font-mono text-xs tracking-wide text-[#7C8BA8] hover:text-[#E8ECF4] border border-white/10 hover:border-white/20 rounded-full px-4 py-2 transition-colors">
+        &larr; Return to home
+      </a>
+      <a href="/generate" class="font-mono text-xs tracking-wide text-[#0B1220] bg-[#5EEAD4] hover:bg-[#7FF2E1] rounded-full px-4 py-2 transition-colors shadow-[0_0_20px_-6px_rgba(94,234,212,0.7)]">
+        Generate a password &rarr;
+      </a>
+    </div>
+  </main>
+
+<script>
+  // ---- Data passed in from the server ----
+  const score = <%- JSON.stringify(typeof score !== 'undefined' ? score : 0) %>;
+  const entropy = <%- JSON.stringify(typeof entropy !== 'undefined' ? entropy : 0) %>;
+  const feedbackRaw = <%- JSON.stringify(typeof feedback !== 'undefined' ? feedback : []) %>;
+
+  const feedback = Array.isArray(feedbackRaw)
+    ? feedbackRaw
+    : (feedbackRaw ? [String(feedbackRaw)] : []);
+
+  const SCORE_MAX = 10;
+  const ENTROPY_MAX = 128; // bits — beyond this, strength is effectively maxed out
+
+  const levels = [
+    { name: 'Very weak',   color: '#FB7185', glow: 'rgba(251,113,133,0.55)' },
+    { name: 'Weak',        color: '#FB923C', glow: 'rgba(251,146,60,0.5)'  },
+    { name: 'Fair',        color: '#FBBF24', glow: 'rgba(251,191,36,0.5)' },
+    { name: 'Strong',      color: '#5EEAD4', glow: 'rgba(94,234,212,0.5)' },
+    { name: 'Very strong', color: '#34D399', glow: 'rgba(52,211,153,0.55)' },
+  ];
+
+  function levelForScore(s) {
+    // s is out of 10 — map onto 5 named levels (0-1, 2-3, 4-5, 6-7, 8-10 roughly)
+    const idx = Math.max(0, Math.min(4, Math.round((s / SCORE_MAX) * 4)));
+    return levels[idx];
+  }
+
+  const level = levelForScore(score);
+
+  // ---- Fill header, hero, badge ----
+  document.getElementById('entropyValue').textContent = Math.round(entropy);
+  document.getElementById('scoreValue').textContent = Math.max(0, Math.min(SCORE_MAX, score));
+
+  const verdictLine = document.getElementById('verdictLine');
+  verdictLine.textContent = level.name.toLowerCase() + ' — rated ' + Math.max(0, Math.min(SCORE_MAX, score)) + '/10';
+
+  const badge = document.getElementById('ratingBadge');
+  badge.textContent = level.name;
+  badge.style.color = level.color;
+  badge.style.borderColor = level.color + '55';
+  badge.style.backgroundColor = level.color + '14';
+
+  //Bit-strip bar
+  const SEGMENTS = 32;
+  const stripEl = document.getElementById('bitStrip');
+  const stripMaxLabel = document.getElementById('stripMaxLabel');
+
+  for (let i = 0; i < SEGMENTS; i++) {
+    const bit = document.createElement('span');
+    bit.className = 'bit flex-1 rounded-sm bg-[#1B2740]';
+    bit.style.height = (10 + (i % 4) * 2) + 'px'; // gentle jagged skyline, not a flat block
+    stripEl.appendChild(bit);
+  }
+
+  function renderStrip(byEntropy) {
+    const ratio = byEntropy
+      ? Math.max(0, Math.min(1, entropy / ENTROPY_MAX))
+      : Math.max(0, Math.min(1, score / SCORE_MAX));
+    const filled = Math.round(ratio * SEGMENTS);
+    const bits = stripEl.children;
+
+    for (let i = 0; i < bits.length; i++) {
+      const on = i < filled;
+      bits[i].style.transitionDelay = on ? (i * 12) + 'ms' : '0ms';
+      bits[i].style.backgroundColor = on ? level.color : '#1B2740';
+      bits[i].style.boxShadow = on ? ('0 0 10px ' + level.glow) : 'none';
+    }
+    stripMaxLabel.textContent = byEntropy ? ENTROPY_MAX + '+' : SCORE_MAX;
+  }
+
+  renderStrip(false);
+
+  const toggle = document.getElementById('metricToggle');
+  toggle.addEventListener('change', () => renderStrip(toggle.checked));
+
+  //Feedback list
+  const listEl = document.getElementById('feedbackList');
+
+  if (feedback.length === 0) {
+    const li = document.createElement('li');
+    li.className = 'flex items-start gap-2.5 text-[#34D399]';
+    li.innerHTML = '<span class="mt-0.5">✓</span><span>No issues detected — this password looks solid.</span>';
+    listEl.appendChild(li);
+  } else {
+    feedback.forEach((item, i) => {
+      const li = document.createElement('li');
+      li.className = 'flex items-start gap-2.5 text-[#C4CDE0] rise';
+      li.style.animationDelay = (0.1 + i * 0.05) + 's';
+      li.innerHTML = '<span class="mt-0.5 text-[#7C8BA8]">›</span><span>' +
+        String(item).replace(/</g, '&lt;') + '</span>';
+      listEl.appendChild(li);
+    });
+  }
+</script>
+</body>
+</html>

@@ -25,9 +25,12 @@ app.post("/check" , (req , res , next) => {
   const entropy = calculateEntropy(password);
   const feedback = loadFeedback(checks);
 
-  //console.log("The final answers are" , score , entropy);
-  //console.log(feedback);
-  
+  console.log("The final answers are" , score , entropy);
+  res.render('result' , {
+    score: score,
+    entropy: entropy,
+    feedback: feedback
+  });
 
   
 })
