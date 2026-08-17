@@ -4,6 +4,8 @@ const mainRouter = require('./routes/mainRouter');
 
 const app = express();
 
+app.set("trust proxy", 1);
+
 app.use(express.urlencoded());
 
 app.set('view engine', 'ejs');
