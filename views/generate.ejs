@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generate Password</title>
+  <style>
+    @font-face {
+      font-family: 'system-mono';
+      src: local('JetBrains Mono'), local('SFMono-Regular'), local('Menlo');
+    }
+
+    :root {
+      --bg: #0b0d10;
+      --panel: #131519;
+      --panel-border: #23262c;
+      --text: #e7e9ec;
+      --text-dim: #8b8f97;
+      --accent: #5eead4;
+      --accent-dim: #1c2b28;
+      --danger: #f2555a;
+      --danger-bg: #241315;
+      --danger-border: #4a2124;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 10px;
+      padding: 36px 32px 32px;
+    }
+
+    .eyebrow {
+      font-family: 'system-mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin: 0 0 8px;
+    }
+
+    h1 {
+      font-size: 21px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin: 0 0 28px;
+      color: var(--text);
+    }
+
+    .alert {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: var(--danger-bg);
+      border: 1px solid var(--danger-border);
+      color: #f4b6b8;
+      font-size: 13px;
+      line-height: 1.5;
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-bottom: 22px;
+    }
+
+    .alert svg { flex: 0 0 auto; margin-top: 1px; }
+
+    form { display: flex; flex-direction: column; gap: 22px; }
+
+    .field label.field-label {
+      display: block;
+      font-size: 11px;
+      font-family: 'system-mono', monospace;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      background: #0e1013;
+      border: 1px solid var(--panel-border);
+      color: var(--text);
+      font-size: 15px;
+      font-family: 'system-mono', monospace;
+      border-radius: 7px;
+      padding: 11px 12px;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    input[type="number"]:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-dim);
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .option {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 14px;
+      cursor: pointer;
+      background: #0e1013;
+      transition: background 0.12s ease;
+    }
+
+    .option:not(:last-child) { border-bottom: 1px solid var(--panel-border); }
+    .option:hover { background: #14171b; }
+
+    .option input[type="radio"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 17px;
+      height: 17px;
+      flex: 0 0 auto;
+      border: 1.5px solid #3a3f47;
+      border-radius: 50%;
+      display: grid;
+      place-content: center;
+      background: transparent;
+      cursor: pointer;
+      transition: border-color 0.15s ease;
+    }
+
+    .option input[type="radio"]::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      transform: scale(0);
+      transition: transform 0.12s ease;
+    }
+
+    .option input[type="radio"]:checked {
+      border-color: var(--accent);
+    }
+
+    .option input[type="radio"]:checked::before {
+      transform: scale(1);
+    }
+
+    .option input[type="radio"]:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .option span.opt-label {
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .option span.opt-hint {
+      margin-left: auto;
+      font-family: 'system-mono', monospace;
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      background: var(--accent);
+      color: #06110f;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      border: none;
+      border-radius: 7px;
+      padding: 12px;
+      cursor: pointer;
+      margin-top: 4px;
+      transition: filter 0.15s ease, transform 0.05s ease;
+    }
+
+    button[type="submit"]:hover { filter: brightness(1.08); }
+    button[type="submit"]:active { transform: translateY(1px); }
+    button[type="submit"]:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <p class="eyebrow">Security · Local generation</p>
+    <h1>Generate password</h1>
+
+    <!-- Error message -->
+    <% if (query.error) { %>
+      <div class="alert">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8 1.5L15 14.5H1L8 1.5Z" stroke="#f2555a" stroke-width="1.3" stroke-linejoin="round"/>
+          <path d="M8 6.5V9.5" stroke="#f2555a" stroke-width="1.3" stroke-linecap="round"/>
+          <circle cx="8" cy="11.8" r="0.9" fill="#f2555a"/>
+        </svg>
+        <span>All radios cannot be unselected.</span>
+      </div>
+    <% } %>
+
+    <form method="POST" action="/generate-password">
+      <div class="field">
+        <label class="field-label" for="length">Length</label>
+        <input type="number" id="length" name="length" required placeholder="16">
+      </div>
+
+      <div class="field">
+        <label class="field-label">Character set</label>
+        <div class="options">
+          <label class="option">
+            <input type="radio" name="uppercase" value="true">
+            <span class="opt-label">Uppercase</span>
+            <span class="opt-hint">A–Z</span>
+          </label>
+
+          <label class="option">
+            <input type="radio" name="lowercase" value="true">
+            <span class="opt-label">Lowercase</span>
+            <span class="opt-hint">a–z</span>
+          </label>
+
+          <label class="option">
+            <input type="radio" name="number" value="true">
+            <span class="opt-label">Numbers</span>
+            <span class="opt-hint">0–9</span>
+          </label>
+
+          <label class="option">
+            <input type="radio" name="symbol" value="true">
+            <span class="opt-label">Symbols</span>
+            <span class="opt-hint">!@#$</span>
+          </label>
+
+          <label class="option">
+            <input type="radio" name="exclude" value="true">
+            <span class="opt-label">Exclude ambiguous</span>
+            <span class="opt-hint">O/0, l/1</span>
+          </label>
+        </div>
+      </div>
+
+      <button type="submit">Generate password</button>
+    </form>
+  </div>
+</body>
+</html>

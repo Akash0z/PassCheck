@@ -8,4 +8,8 @@ router.get("/", controller.loadMain);
 
 router.post("/check" , controller.renderCheckFunction);
 
+router.get("/generate" , controller.generatePassword);
+
+router.post("/generate-password" , controller.passwordGenerator);
+
 module.exports = router;
